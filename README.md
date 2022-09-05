@@ -67,4 +67,18 @@ awk -F "," '$1!~/""/{split($3,a," "); print a[1]"_"a[2]"\t"$6}' mitochondrion.1.
 
 ## (2) Filtern des Datensatzes
 
-Der Datensatz `mitochondrion.1.protein.faa.gz` enthält nun die Aminosäuresequenz von mitochondrialer Gene von allen verfügbaren Organismen. Mit Hilfe eines eignes für diesen Zweck geschriebenen Pythonskripts isolieren wir nun Sequenzendaten der Chrordatieren und verwerfen alle anderen Daten. Ausserdem
+Der Datensatz `mitochondrion.1.protein.faa.gz` enthält nun die Aminosäuresequenz von mitochondrialer Gene von allen verfügbaren Organismen. Mit Hilfe eines eignes für diesen Zweck geschriebenen Skripts ([proteins2genome.py](scripts/proteins2genome.py)) in der Programiersprache _Python_ isolieren wir nun Sequenzendaten der Chrordatieren und verwerfen alle anderen Daten. Außerdem reduzieren wir den Datensatz auf Gene, die in mindestens 75% aller Taxa vorkommen.
+
+```bash
+## here, we reduce the FASTA file to contain only genes that are present in 75% of all taxa that belong to the Chordates
+mkdir -p /media/inter/mkapun/projects/EukMitGenomeTree/results_AA/Chordata
+
+cd /media/inter/mkapun/projects/EukMitGenomeTree
+
+python /media/inter/mkapun/projects/EukMitGenomeTree/scripts/proteins2genome.py \
+  --TaxList data/mitochondrion.1.1.genomic_fixed_taxon.list \
+  --Tax ${Taxon} \
+  --FreqTH 0.75 \
+  --input data/mitochondrion.1.protein.faa.gz  \
+  > results_AA/${Taxon}/mitochondrion.1.protein_${Taxon}.fasta
+```
