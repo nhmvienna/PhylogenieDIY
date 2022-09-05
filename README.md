@@ -67,11 +67,12 @@ awk -F "," '$1!~/""/{split($3,a," "); print a[1]"_"a[2]"\t"$6}' mitochondrion.1.
 
 ## (2) Filtern des Datensatzes
 
-Der Datensatz `mitochondrion.1.protein.faa.gz` enthält nun die Aminosäuresequenz mitochondrialer Gene von allen verfügbaren Organismen. Mit Hilfe eines eigens für diesen Zweck geschriebenen Skripts ([proteins2genome.py](scripts/proteins2genome.py)) in der Programmiersprache _Python_ isolieren wir nun Sequenzendaten der Chrordatieren und verwerfen alle anderen Daten. Außerdem reduzieren wir den Datensatz auf Gene, die in mindestens 90% aller Taxa vorkommen. Außerdem verbinden wir für jedes Taxon die Aminosäurensequenzen der einzelnen Gene in der immer gleichen Reihenfolge zu einer langen Einzelsequenz
+Der Datensatz `mitochondrion.1.protein.faa.gz` enthält nun die Aminosäuresequenz mitochondrialer Gene von allen verfügbaren Organismen. Mit Hilfe eines eigens für diesen Zweck geschriebenen Skripts ([proteins2genome.py](scripts/proteins2genome.py)) in der Programmiersprache _Python_ isolieren wir nun Sequenzendaten der Chrordatieren und verwerfen alle anderen Daten. Außerdem reduzieren wir den Datensatz auf Gene, die in mindestens 90% aller Taxa vorkommen. Außerdem verbinden wir für jedes Taxon die Aminosäurensequenzen der einzelnen Gene in der immer gleichen Reihenfolge zu einer langen Einzelsequenz.
 
 ```bash
 ## here, we reduce the FASTA file to contain only genes that are present in 90% of all taxa that belong to the Chordates
 mkdir -p /media/inter/mkapun/projects/EukMitGenomeTree/results_AA/Chordata
+
 
 cd /media/inter/mkapun/projects/EukMitGenomeTree
 
@@ -85,4 +86,21 @@ python /media/inter/mkapun/projects/EukMitGenomeTree/scripts/proteins2genome.py 
 
 ## (3) Alignment der Sequenzdaten
 
-Nun sind die Aminosäuresequenzen der einzelnen Taxa entsprechend der Gene geordnet und zu einer langen Kette von Aminosäuren verbunden. Diese Kette berücksichtigt aber keine "strukturellen" Mutationen, wie Insertionen oder Deletionen, die zur Verschiebung der relativen Positionen der gleichen Aminosäuren in verschiedenen Taxa führen kann. Durch ein sogenanntes Alignment werden zusammengehörige Aminosäuren  
+Nun sind die Aminosäuresequenzen der einzelnen Taxa entsprechend der Gene geordnet und zu einer langen Kette von Aminosäuren verbunden. Diese Kette berücksichtigt aber keine "strukturellen" Mutationen, wie Insertionen oder Deletionen, die zur Verschiebung der relativen Positionen der gleichen Aminosäuren in verschiedenen Taxa führen kann. Durch ein sogenanntes Alignment werden zusammengehörige Aminosäuren in Spalten übereinander geordnet, wobei jede Zeile die Sequenzdaten eines Taxons enthält. Positionen mit "Löchern" aufgrund von strukturellen Mutationen werden mit einem `-` Symbol aufgefüllt. Dieser kritische Schritt ist notwendig um gleiche Merkmale, in unserem Fall, Aminosäuren an der gleichen Sequenzposition, über Taxa hinweg miteinander zu vergleichen und so genetische Unterschiede zu erkennen. Die zugrunde liegenden Algorithmen sind sehr rechenintensiv, weshalb wir die Rechenlast auf 200 Prozessorkerne aufteilen.
+
+Benötigte zusätzliche Programme:
+
+-   [MAFFT](https://mafft.cbrc.jp/alignment/software/)
+
+```bash
+## carry out the alignment with MAFFT
+mafft \
+  --thread 200 \
+  --auto \
+  results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata.fasta \
+  > results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln_full.fasta \
+```
+
+Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein solches Alignment mit DNA-Sequenzen
+
+![Alignment](data/Alignment_small.jpg)
