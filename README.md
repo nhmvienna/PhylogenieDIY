@@ -210,3 +210,5 @@ ggsave(filename='~/PhylogenyDIY/results/raxml/tree_rect.pdf',
   width=10,
   height=30,limitsize=F)
 ```
+
+![Tree](data/Tree_rect.jpg)
