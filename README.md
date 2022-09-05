@@ -18,10 +18,10 @@ Benötigte zusätzliche Programme:
 
 ```bash
 ## make directory
-mkdir /media/inter/mkapun/projects/EukMitGenomeTree/data
+mkdir ~/PhylogenyDIY/data
 
 ## go to directory
-cd /media/inter/mkapun/projects/EukMitGenomeTree/data
+cd ~/PhylogenyDIY/data
 
 ## download aminoacid sequence dataset
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.1.protein.faa.gz
@@ -29,7 +29,7 @@ wget https://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.1.p
 ## download DNA sequence dataset
 wget https://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.1.1.genomic.fna.gz
 
-## simplify the header of the FASTA to only retain the name of the Species
+## simplify the header of the DNA FASTA to only retain the name of the Species
 gunzip -c mitochondrion.1.1.genomic.fna.gz \
   | awk '{if ($1~"^>") {print $1"_"$2"_"$3} else {print}}' \
   > mitochondrion.1.1.genomic_fixed.fasta
@@ -71,17 +71,16 @@ Der Datensatz `mitochondrion.1.protein.faa.gz` enthält nun die Aminosäureseque
 
 ```bash
 ## here, we reduce the FASTA file to contain only genes that are present in 90% of all taxa that belong to the Chordates
-mkdir -p /media/inter/mkapun/projects/EukMitGenomeTree/results_AA/Chordata
+mkdir -p ~/PhylogenyDIY/results
 
+cd ~/PhylogenyDIY
 
-cd /media/inter/mkapun/projects/EukMitGenomeTree
-
-python /media/inter/mkapun/projects/EukMitGenomeTree/scripts/proteins2genome.py \
+python ~/PhylogenyDIY/scripts/proteins2genome.py \
   --TaxList data/mitochondrion.1.1.genomic_fixed_taxon.list \
-  --Tax ${Taxon} \
+  --Tax Chordata \
   --FreqTH 0.90 \
   --input data/mitochondrion.1.protein.faa.gz  \
-  > results_AA/${Taxon}/mitochondrion.1.protein_${Taxon}.fasta
+  > results/mitochondrion.1.protein_Chordata.fasta
 ```
 
 ## (3) Alignment der Sequenzdaten
@@ -97,27 +96,29 @@ Benötigte zusätzliche Programme:
 ```bash
 conda activate mafft-7.487
 
+cd ~/PhylogenyDIY
+
 ## carry out the alignment with MAFFT
 mafft \
   --thread 200 \
   --auto \
-  results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata.fasta \
-  > results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln_full.fasta
+  results/mitochondrion.1.protein_Chordata.fasta \
+  > results/mitochondrion.1.protein_Chordata_aln_full.fasta
 
-## Fix ID's after MAFFT :-(((((
-python  /media/inter/mkapun/projects/EukMitGenomeTree/scripts/fixIDAfterMafft.py \
-  --Alignment /media/inter/mkapun/projects/EukMitGenomeTree/results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln_full.fasta \
-  --input /media/inter/mkapun/projects/EukMitGenomeTree/results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata.fasta \
-  > /media/inter/mkapun/projects/EukMitGenomeTree/results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln_full_fixed.fasta
+## Fix ID's after MAFFT alignment
+python  ~/PhylogenyDIY/scripts/fixIDAfterMafft.py \
+  --Alignment ~/PhylogenyDIY/results/mitochondrion.1.protein_Chordata_aln_full.fasta \
+  --input ~/PhylogenyDIY/results/mitochondrion.1.protein_Chordata.fasta \
+  > ~/PhylogenyDIY/results/mitochondrion.1.protein_Chordata_aln_full_fixed.fasta
 
 ## Only retain Position where less than 50% of all taxa have gaps
-python /media/inter/mkapun/projects/EukMitGenomeTree/scripts/reduceAln2FASTA.py \
-  --input results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln_full_fixed.fasta  \
+python ~/PhylogenyDIY/scripts/reduceAln2FASTA.py \
+  --input results/mitochondrion.1.protein_Chordata_aln_full_fixed.fasta  \
   --threshold 0.5 \
-  > results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln.fasta
+  > results/mitochondrion.1.protein_Chordata_aln.fasta
 
 ## replace ambiguous AA with gaps
-sed -i '/^>/! s/[BJZX]/\-/g' /media/inter/mkapun/projects/EukMitGenomeTree/results_AA_stringent/Chordata/mitochondrion.1.protein_Chordata_aln.fasta
+sed -i '/^>/! s/[BJZX]/\-/g' ~/PhylogenyDIY/results/mitochondrion.1.protein_Chordata_aln.fasta
 ```
 
 Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein solches Alignment mit DNA-Sequenzen
@@ -136,8 +137,8 @@ Benötigte zusätzliche Programme:
 module load Phylogeny/RAxML-2.8.10
 
 ## make new directory
-mkdir results_AA_stringent/Chordata/raxml
-cd results_AA_stringent/Chordata/raxml
+mkdir ~/PhylogenyDIY/results/raxml
+cd ~/PhylogenyDIY/results/raxml
 
 ## run ML tree reconstruction
 raxmlHPC-PTHREADS-SSE3 \
@@ -150,4 +151,62 @@ raxmlHPC-PTHREADS-SSE3 \
   -T 100
 ```
 
-Im Anschluss müssen noch die Taxon-namen mit Hilfe eines zusätzlihcen
+Im Anschluss müssen noch die Taxon-IDs aus den ursprünglichen Metadaten mit Hilfe eines zusätzlichen Skripts ([RenameTreeLeaves_new.py](scripts/RenameTreeLeaves_new.py)) durch korrekte Artnamen ersetzt werden. Außerdem bestimmen wir mit Hilfe eines weiteren Scripts ([MakeOutgroup.py](scripts/MakeOutgroup.py)), welche Taxa zu den Ordnungen _Hyperoartia_, _Ascidiacea_ und _Leptocardii_ gehören, die wir als Außengruppen für die visuelle Darstellung des Baums definieren.
+
+```bash
+python ~/PhylogenyDIY/scripts/RenameTreeLeaves_new.py \
+  --input ~/PhylogenyDIY/results/raxml/RAxML_bestTree.Chordata_const \
+  > ~/PhylogenyDIY/results/raxml/RAxML_bestTree_renamed.Chordata_const
+
+outgroup=`python ~/PhylogenyDIY/scripts/MakeOutgroup.py --tree ~/PhylogenyDIY/results/iqtree_const/mitochondrion.1.protein_Chordata_aln.fasta_renamed.parstree --taxa ~/PhylogenyDIY/data/mitochondrion.1.1.genomic_fixed_taxon.list --list Hyperoartia,Ascidiacea,Leptocardii`
+```
+
+Schlussendlich erstellen wir mit Hilfe der Programmiersprache _R_ eine visuelle Darstellung des besten Stammbaum-Modells, welches mit RAxML identifiziert wurde
+
+```R
+# load necessary R libraries
+library('ggtree')
+library('gridExtra')
+library('ggrepel')
+library('ape')
+library('ggplot2')
+library('phangorn')
+library('ggimage')
+library('dplyr')
+library('plotly')
+
+## load tree file and root with outgroup taxa
+tree<-read.tree('~/PhylogenyDIY/results/raxml/RAxML_bestTree_renamed.Chordata_const')
+tree<-root(tree,outgroup=c($outgroup))
+
+## load color information for highlighting different orders in different colors
+Col=read.table('~/PhylogenyDIY/data/mitochondrion.1.1.genomic_fixed_taxon.colors',
+header=F)
+colnames(Col)<-c('tip','cat')
+
+## plot tree
+phylo.tree <- ggtree(tree,
+layout='roundrect',
+lwd=.1,
+branch.length='none')+
+theme_tree2()+
+theme_bw()+
+xlab('av. subst./site') +
+theme(axis.title.y=element_blank(),
+  axis.text.y=element_blank(),
+axis.ticks.y=element_blank())+
+theme(legend.position='bottom') +
+scale_colour_discrete('Orders')+
+theme(legend.title = element_text(size=10))+
+theme(legend.text = element_text(size=8))+
+guides(color = guide_legend(override.aes = list(size = 3)))
+
+phylo.tree <- phylo.tree  %<+% Col+
+geom_tiplab(aes(color=cat), size = 0.2)
+
+## export tree
+ggsave(filename='~/PhylogenyDIY/results/raxml/tree_rect.pdf',
+  phylo.tree,
+  width=10,
+  height=30,limitsize=F)
+```
