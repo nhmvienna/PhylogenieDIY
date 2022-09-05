@@ -135,11 +135,11 @@ Benötigte zusätzliche Programme:
 ```bash
 module load Phylogeny/RAxML-2.8.10
 
+## make new directory
 mkdir results_AA_stringent/Chordata/raxml
 cd results_AA_stringent/Chordata/raxml
 
-######## run ML tree reconstruction
-
+## run ML tree reconstruction
 raxmlHPC-PTHREADS-SSE3 \
   -m PROTGAMMAWAG  \
   -N 20 \
@@ -150,4 +150,4 @@ raxmlHPC-PTHREADS-SSE3 \
   -T 100
 ```
 
-Im Anschluss müssen noch die Taxon-namen mit Hilfe eines zusätzlihcen 
+Im Anschluss müssen noch die Taxon-namen mit Hilfe eines zusätzlihcen
