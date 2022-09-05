@@ -95,6 +95,8 @@ Benötigte zusätzliche Programme:
 -   [MAFFT](https://mafft.cbrc.jp/alignment/software/)
 
 ```bash
+conda activate mafft-7.487
+
 ## carry out the alignment with MAFFT
 mafft \
   --thread 200 \
@@ -124,12 +126,28 @@ Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein s
 
 ## (4) Stammbaum-Rekonstruktion mit Hilfe des Maximum-Likelihood Verfahrens
 
-Der aufbereitete Datensatz kann nun benutzt werden um die Verwandtschaftsbeziehung der einzelnen Taxa anhand von Sequenzunterschiede abzuschätzen. Dazu wird ein maximum-likelihood Verfahren angewandt, bei der die Wahrscheinlichkeit verschiedener Baum-topologien, also Verwandtschaftsbeziehungen zwischen den einzelnen Taxa, verglichen werden. Ziel ist es den Stammbau zu finden, der am besten zu der Datenmatrix passt wenn man spezifische Annahmen zum Ablauf der Evolution macht, z.B.: wie häufig eine Aminosäure auf Grund von Mutationen durch eine andere ersetzt wird. Dieser Rechenschritt ist äußerst rechenintensiv, da sehr viele verschiedenen Baumtopologien miteinander verglichen werden.
+Der aufbereitete Datensatz kann nun benutzt werden um die Verwandtschaftsbeziehung der einzelnen Taxa anhand von Sequenz-Unterschieden abzuschätzen. Dazu wird ein maximum-likelihood Verfahren angewandt, bei der die Wahrscheinlichkeit verschiedener Baum-Topologien, also Verwandtschaftsbeziehungen zwischen den einzelnen Taxa, verglichen werden. Ziel ist es den Stammbau zu finden, der am besten zu der Datenmatrix passt wenn man spezifische Annahmen zum Ablauf der Evolution macht, z.B.: wie häufig eine Aminosäure auf Grund von Mutationen durch eine andere ersetzt wird. Dieser Rechenschritt ist äußerst rechenintensiv, da sehr viele verschiedenen Baum-Topologien miteinander verglichen werden.
 
 Benötigte zusätzliche Programme:
 
 -   [RAxML](https://cme.h-its.org/exelixis/web/software/raxml/)
 
 ```bash
+module load Phylogeny/RAxML-2.8.10
 
+mkdir results_AA_stringent/Chordata/raxml
+cd results_AA_stringent/Chordata/raxml
+
+######## run ML tree reconstruction
+
+raxmlHPC-PTHREADS-SSE3 \
+  -m PROTGAMMAWAG  \
+  -N 20 \
+  -p 772374015 \
+  -n Chordata_const \
+  -s ../mitochondrion.1.protein_Chordata_aln.fasta \
+  -# 3 \
+  -T 100
 ```
+
+Im Anschluss müssen noch die Taxon-namen mit Hilfe eines zusätzlihcen 
