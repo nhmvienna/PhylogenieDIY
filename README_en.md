@@ -4,15 +4,15 @@ We use data from the [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)-database of 
 
 ![Mito](https://upload.wikimedia.org/wikipedia/commons/6/64/Cell_structure_%2813080952404%29.jpg)
 
-Powerful computers which sufficient RAM memory (>100GB) and multicore processors (>100 cores) for parallelization are needed for the compuationally intense analyes. Additionally, the operation system should be UNIX-based, which allows to commit tasks to the computer via commandline. If you are interested in UNIX and the basics of bioinformatics analyses, you can find useful tutorial and other resources on the internet, such as [here](http://www.ee.surrey.ac.uk/Teaching/Unix/index.html) and [here](https://practicalcomputing.org/).
+Powerful computers with sufficient RAM memory (>100GB) and multicore processors (>100 cores) for parallelization are required to carry out compuationally intense analyes. Additionally, the operation system should be UNIX-based, which allows to commit tasks to the computer via commandline. If you are interested in learning more about UNIX and the basics of bioinformatics analyses, you can find useful tutorials and other resources on the internet, such as [here](http://www.ee.surrey.ac.uk/Teaching/Unix/index.html) and [here](https://practicalcomputing.org/).
 
-Im Folgenden stellen wir die fundamentalen Analyseschritte zur Erstellung einer Phylogenie der Chordatiere (wie in Vitrine dargestellt) vor. Da die Zahl der Organismen in der RefSeq Datenbank ständig zunimmt, können die Ergebnisse vom bereits generierten Baum in der Vitrine abweichen.
+Below, we present the basic analysis steps underlying the phylogenetic reconstruction of chordates (as shown in the glass cabinet). Since the number of taxa in the RefSeq database is constantly increasing, the resulting tree may differ from our original tree.
 
-## (1) Download der Sequenzdaten
+## (1) downloading the sequencing data
 
-Zunächst wird ein Datensatz mit sämtlichen verfügbaren mitochondrialen Daten heruntergeladen. Dazu fokussieren wir uns, wie bereits eingangs erwähnt auf Aminosäuresequenzen sämtlicher kodierender Gene in den mitochondrialen Genomen. Wir laden zusätzlich die DNA Sequenzen herunter. Basierend auf der Metainformation der einzelnen Sequenzen erstellen wir eine Datenbank mit den Namen aller vorhandenen Organismen auf verschiedenen taxonomischen Ebenen (wie, zum Beispiel Arten, Gattungen, Familien, Ordnungen, etc.).
+At first, we downladed the dataset with aminoacid and DNA sequences of mitochondrial genomes for all available taxa. Based on the metainfomation from the individual sequences, we generate a database of names of the organisms at different hierarchical levels (e.g., species, genus, family, order, etc.).
 
-Benötigte zusätzliche Programme:
+Additionally required programs:
 
 -   [NCBI-edirect](https://www.ebi.ac.uk/Tools/msa/muscle/Tools/NCBIedirect)
 
