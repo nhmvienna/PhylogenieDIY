@@ -88,9 +88,9 @@ python ~/PhylogenyDIY/scripts/proteins2genome.py \
 
 The previous step produced a dataset, where the aminoacid sequences for each taxon are concatenated and ordered by gene name. Sequences of different taxa are placed on consecutive rows, but do not yet allow a direct sequence comparison. Mutations, such as insertions or deletions, may lead to an incorrect horizontal shift in the position of aminoacids of the same origin (so called "orthologous" aminoacids). The alignment program `MAFFT` places orthologous aminoacids in columns and fills up gaps by the `-` symbol to correctly place orthologous aminoacids of differnt taxa on top of each other. This critical step then allows to compare the aminoacids across taxa and identify genetic differences. The underlying algorithms are computationally demanding. Thus, we distrubte the job across 200 processes.
 
-MAFFT verändert die Metainformation der ursprünglichen Daten, was zu einem Problem führt, wenn die ursprünglichen Taxon-Namen für die Benennung der Astenden des Stammbaums benutzt werden sollen. Ein eigenes Skript ([fixIDAfterMafft.py](scripts/fixIDAfterMafft.py)) wird deshalb benutzt um die ursprüngliche Metainformation wieder herzustellen. In einem weiteren Schritt entfernen wir ([reduceAln2FASTA.py](scripts/reduceAln2FASTA.py)) Positionen an welchen mehr als 50% aller Individuen ein `-` Symbol enthalten. Dies soll verhindern, dass eine hohe Anzahl an nicht-informativen Positionen die Rekonstruktion von Verwandtschaftsverhältnisse verzerrt.  
+MAFFT is modifying the metainformation from the original data, which causes problems when assigning taxon names to the branchtips of the final phylogenetic tree. Thus, we reconsitute the original metadata using a custom script ([fixIDAfterMafft.py](scripts/fixIDAfterMafft.py)). In addition, we delete positions in the alignment which contain gaps in more than 50% of all taxons ([reduceAln2FASTA.py](scripts/reduceAln2FASTA.py)) to avoid biased results due to an excess of non-informative positions.
 
-Benötigte zusätzliche Programme:
+Additionally required programs:
 
 -   [MAFFT](https://mafft.cbrc.jp/alignment/software/)
 
@@ -126,11 +126,11 @@ Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein s
 
 ![Alignment](data/Alignment_small.jpg)
 
-## (4) Stammbaum-Rekonstruktion mit Hilfe des Maximum-Likelihood Verfahrens
+## (4) Reconstructing the phylogenetic tree using Maximum Likelihood
 
-Der aufbereitete Datensatz kann nun benutzt werden, um die Verwandtschaftsbeziehung der einzelnen Taxa anhand von Sequenz-Unterschieden abzuschätzen. Dazu wird ein maximum-likelihood Verfahren angewandt, bei der die Wahrscheinlichkeit verschiedener Baum-Topologien, also mögliche Verwandtschaftsbeziehungen zwischen den einzelnen Taxa, verglichen werden. Ziel ist es den Stammbau zu finden, welcher am besten zu der Sequenzdatenmatrix passt, wenn man spezifische Annahmen zum evolutionären Ablauf macht, z.B.: wie häufig eine Aminosäure auf Grund von Mutationen durch eine andere ersetzt wird. Dieser Rechenschritt ist äußerst rechenintensiv, da sehr viele verschiedenen Baum-Topologien miteinander verglichen werden. Wir verteilen die Rechenlast deshalb wieder auf 200 Prozessorkerne.
+The polished alignment file can now be used to estimate the relatedness among the taxa based on sequence differences. We employ a maximum-likelihood approach, which compares the probabilities of different tree topologies that describe the relationship among all taxa. The goal of this approach is to idenity the tree topology, which best fits the matrix of sequence data while making specific assumptions about evolutionary change. These assumptions includes, for example, the probability that a given aminoacid is replaced by another due to mutations. These calculations are very computationally demanding and thus we again use 200 CPU cores to distribute the computational load.
 
-Benötigte zusätzliche Programme:
+Additionally required programs:
 
 -   [RAxML](https://cme.h-its.org/exelixis/web/software/raxml/)
 
@@ -152,7 +152,7 @@ raxmlHPC-PTHREADS-SSE3 \
   -T 200
 ```
 
-Im Anschluss müssen noch die Taxon-IDs aus den ursprünglichen Metadaten mit Hilfe eines zusätzlichen Skripts ([RenameTreeLeaves_new.py](scripts/RenameTreeLeaves_new.py)) durch korrekte Artnamen ersetzt werden. Außerdem bestimmen wir mit Hilfe eines weiteren Scripts ([MakeOutgroup.py](scripts/MakeOutgroup.py)), welche Taxa zu den Klassen _Hyperoartia_, _Ascidiacea_ und _Leptocardii_ gehören, die wir als Außengruppen für die visuelle Darstellung des Baums definieren.
+Finally, we replace the original taxon-IDs with correct species names in the best-fitting phylogenetic tree using a custom script ([RenameTreeLeaves_new.py](scripts/RenameTreeLeaves_new.py)). Additionally, we obtain the species names of taxa belonging to the classes _Hyperoartia_, _Ascidiacea_ and _Leptocardii_ using yet another script ([MakeOutgroup.py](scripts/MakeOutgroup.py)) and define these as the outgroup for the visualization of the phylogenetic tree.
 
 ```bash
 python ~/PhylogenyDIY/scripts/RenameTreeLeaves_new.py \
@@ -212,6 +212,6 @@ ggsave(filename='~/PhylogenyDIY/results/raxml/tree_rect.pdf',
   height=30,limitsize=F)
 ```
 
-Der Baum der unterhalb und in der Geschichtsvitrine gezeigt wird, wurde mit Hilfe von Graphikprogrammen nachbearbeitet. So wurden, z.B. die ursprüngliche Legende entfernt und durch eine vertikale Beschriftung der Klassen mit deutschen Namen ersetzt. Außerdem wurden die Äste mancher Taxon-Gruppen um die X-Achse rotiert, was den Baum nicht verändert, aber die Lesbarkeit verbessert.
+The tree below and in the glass cabinet was additionally edited with other graphics programs. We, for example, replaced the original legend at the bottom of the figure and added vertical german names for all taxonomic classes. In addition, we rotated several taxon-groups along their x-axis. This does not modify the tree topology, but improves the readability of the tree.
 
 ![Tree](data/Tree_rect.jpg)
