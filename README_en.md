@@ -4,7 +4,7 @@ We use data from the public [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)-datab
 
 ![Mito](https://upload.wikimedia.org/wikipedia/commons/6/64/Cell_structure_%2813080952404%29.jpg)
 
-Powerful computers with sufficient RAM memory (>100GB) and multicore processors (>100 cores) are required to carry out compuationally demanding analyes. Additionally, the operation system should be UNIX-based, which allows to commit tasks to the computer via the commandline. If you are interested in learning more about UNIX and the basics of bioinformatics analyses, you can find useful tutorials and other resources on the internet, such as [here](http://www.ee.surrey.ac.uk/Teaching/Unix/index.html) and [here](https://practicalcomputing.org/).
+Powerful computers with sufficient RAM memory (>100GB) and multicore processors (>100 cores) are required to carry out compuationally demanding analyes. Additionally, the operation system should be UNIX-based, which allows to commit tasks to the computer on the commandline. If you are interested in learning more about UNIX and the basics of bioinformatics analyses, you can find useful tutorials and other resources on the internet, such as [here](http://www.ee.surrey.ac.uk/Teaching/Unix/index.html) and [here](https://practicalcomputing.org/).
 
 Below, we present the basic analysis steps underlying the phylogenetic reconstruction of chordates (as shown in the glass cabinet). Since the number of taxa in the RefSeq database is constantly growing, the resulting tree may differ from our original tree.
 
@@ -86,9 +86,9 @@ python ~/PhylogenyDIY/scripts/proteins2genome.py \
 
 ## (3) Alignment of the sequencing data
 
-The previous step produced a dataset, where the aminoacid sequences for each taxon are concatenated and ordered by gene name. Sequences of different taxa are placed on consecutive rows, but do not yet allow a direct sequence comparison. Mutations, such as insertions or deletions, may lead to an incorrect horizontal shift in the position of aminoacids of the same origin (so called "orthologous" aminoacids). The alignment program `MAFFT` places orthologous aminoacids in columns and fills up gaps by the `-` symbol to correctly place orthologous aminoacids of differnt taxa on top of each other. This critical step then allows to compare the aminoacids across taxa and identify genetic differences. The underlying algorithms are computationally demanding. Thus, we distrubte the job across 200 processes.
+The previous step produced a dataset, where the aminoacid sequences for each taxon are concatenated and ordered by gene name. Sequences of different taxa are placed on consecutive rows, but do not yet allow a direct sequence comparison. Mutations, such as insertions or deletions, may lead to an incorrect horizontal shift in the position of aminoacids of the same origin (so called "orthologous" aminoacids). The alignment program `MAFFT` places orthologous aminoacids in columns and fills up gaps by the `-` symbol to correctly place orthologous aminoacids of differnt taxa on top of each other. This critical step then allows to compare the aminoacids across taxa and identify genetic differences. The underlying algorithms are computationally demanding. Thus, we distrubte the job across 200 CPU cores.
 
-MAFFT is modifying the metainformation from the original data, which causes problems when assigning taxon names to the branchtips of the final phylogenetic tree. Thus, we reconsitute the original metadata using a custom script ([fixIDAfterMafft.py](scripts/fixIDAfterMafft.py)). In addition, we delete positions in the alignment which contain gaps in more than 50% of all taxons ([reduceAln2FASTA.py](scripts/reduceAln2FASTA.py)) to avoid biased results due to an excess of non-informative positions.
+MAFFT is modifying the metainformation of the original data, which causes problems when assigning taxon names to the branchtips of the final phylogenetic tree. Thus, we reconsitute the original metadata using a custom script ([fixIDAfterMafft.py](scripts/fixIDAfterMafft.py)). In addition, we delete positions in the alignment which contain gaps in more than 50% of all taxons ([reduceAln2FASTA.py](scripts/reduceAln2FASTA.py)) to avoid biased results due to an excess of non-informative positions.
 
 Additionally required programs:
 
@@ -122,13 +122,13 @@ python ~/PhylogenyDIY/scripts/reduceAln2FASTA.py \
 sed -i '/^>/! s/[BJZX]/\-/g' ~/PhylogenyDIY/results/mitochondrion.1.protein_Chordata_aln.fasta
 ```
 
-Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein solches Alignment basierend auf DNA-Sequenzen.
+The image in the glass cabinet and the image below are examples of such an alignment based on DNA sequencing data.
 
 ![Alignment](data/Alignment_small.jpg)
 
 ## (4) Reconstructing the phylogenetic tree using Maximum Likelihood
 
-The polished alignment file can now be used to estimate the relatedness among the taxa based on sequence differences. We employ a maximum-likelihood approach, which compares the probabilities of different tree topologies that describe the relationship among all taxa. The goal of this approach is to idenity the tree topology, which best fits the matrix of sequence data while making specific assumptions about evolutionary change. These assumptions includes, for example, the probability that a given aminoacid is replaced by another due to mutations. These calculations are very computationally demanding and thus we again use 200 CPU cores to distribute the computational load.
+The polished alignment file can now be used to estimate the relatedness among taxa based on sequence differences. We employ a maximum-likelihood approach, which compares the probabilities of different tree topologies that describe the relationship among all taxa. The goal of this approach is to idenity the tree topology, which best fits the matrix of sequence data while making specific assumptions about evolutionary change. These assumptions includes, for example, the probability that a given aminoacid is replaced by another due to mutations. These calculations are very computationally demanding and thus we again use 200 CPU cores to distribute the computational load.
 
 Additionally required programs:
 
