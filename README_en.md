@@ -128,7 +128,7 @@ The image in the glass cabinet and the image below are examples of such an align
 
 ## (4) Reconstructing the phylogenetic tree using Maximum Likelihood
 
-The polished alignment file can now be used to estimate the relatedness among taxa based on sequence differences. We employ a maximum-likelihood approach, which compares the probabilities of different tree topologies that describe the relationship among all taxa. The goal of this approach is to idenity the tree topology, which best fits the matrix of sequence data while making specific assumptions about evolutionary change. These assumptions includes, for example, the probability that a given aminoacid is replaced by another due to mutations. These calculations are very computationally demanding and thus we again use 200 CPU cores to distribute the computational load.
+The polished alignment file can now be used to estimate the relatedness among taxa based on sequence differences. We employ a maximum-likelihood approach, which compares the probabilities of different tree topologies that describe the relationship among all taxa. The goal of this approach is to idenity the tree topology, which best fits the matrix of sequence data while making specific assumptions about evolutionary change. These assumptions includes, for example, the probability that a given aminoacid is replaced by another due to mutations. These calculations are computationally demanding and thus we again use 200 CPU cores to distribute the computational load.
 
 Additionally required programs:
 
