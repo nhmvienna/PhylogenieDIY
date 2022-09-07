@@ -12,7 +12,7 @@ Im Folgenden stellen wir die fundamentalen Analyseschritte zur Erstellung einer 
 
 Zunächst wird ein Datensatz mit sämtlichen verfügbaren mitochondrialen Daten heruntergeladen. Dazu fokussieren wir, wie bereits eingangs erwähnt, auf Aminosäuresequenzen sämtlicher Protein-codierender Gene in den mitochondrialen Genomen. Wir laden zusätzlich die DNA-Sequenzen herunter. Basierend auf der Metainformation der einzelnen Sequenzen erstellen wir eine Datenbank mit den Namen aller im Datensatz vorhandenen Organismen (wir sprechen von "Taxon", Mehrzahl "Taxa"), wobei die verschiedenen taxonomischen Ebenen inkludiert sind (wie, zum Beispiel Art, Gattung, Familie, Ordnung, etc.).
 
-Benötigte zusätzliche Programme:
+Zusätzlich benötigte Programme:
 
 -   [NCBI-edirect](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
 
@@ -90,7 +90,7 @@ Nun sind die Aminosäuresequenzen der einzelnen Taxa entsprechend der Gene geord
 
 MAFFT verändert die Metainformation der ursprünglichen Daten, was zu einem Problem führt, wenn die ursprünglichen Taxon-Namen für die Benennung der Astenden des phylogenetischen Baums benutzt werden sollen. Ein eigenes Skript ([fixIDAfterMafft.py](scripts/fixIDAfterMafft.py)) wird deshalb benutzt, um die ursprüngliche Metainformation wieder herzustellen. In einem weiteren Schritt ([reduceAln2FASTA.py](scripts/reduceAln2FASTA.py)) entfernen wir Positionen, an denen mehr als 50% aller Individuen ein `-` Symbol enthalten. Dies soll verhindern, dass eine hohe Anzahl an nicht-informativen Positionen die Rekonstruktion der Verwandtschaftsverhältnisse verzerrt.
 
-Benötigte zusätzliche Programme:
+Zusätzlich benötigte Programme:
 
 -   [MAFFT](https://mafft.cbrc.jp/alignment/software/)
 
@@ -130,7 +130,7 @@ Das Hintergrundbild in der Vitrine und das untere Bild sind Beispiele für ein s
 
 Der aufbereitete Datensatz kann nun benutzt werden, um die Verwandtschaftsbeziehungen der einzelnen Taxa anhand von Sequenz-Unterschieden abzuschätzen. Dazu wird ein Maximum-Likelihood-Verfahren angewandt, bei der die Wahrscheinlichkeiten verschiedener Baum-Topologien, also möglicher Verwandtschaftsbeziehungen zwischen den einzelnen Taxa, verglichen werden. Ziel ist es, den phylogenetischen Baum zu finden, welcher am besten zu der Sequenzdatenmatrix passt, wenn man spezifische Annahmen zum evolutionären Ablauf macht, z.B. wie häufig eine Aminosäure auf Grund von Mutationen durch eine andere ersetzt wird. Dieser Rechenschritt ist äußerst rechenintensiv, da sehr viele verschiedene Baum-Topologien miteinander verglichen werden. Wir verteilen die Rechenlast deshalb wieder auf 200 Prozessorkerne.
 
-Benötigte zusätzliche Programme:
+Zusätzlich benötigte Programme:
 
 -   [RAxML](https://cme.h-its.org/exelixis/web/software/raxml/)
 
