@@ -14,7 +14,7 @@ Zunächst wird ein Datensatz mit sämtlichen verfügbaren mitochondrialen Daten 
 
 Benötigte zusätzliche Programme:
 
--   [NCBI-edirect](https://www.ebi.ac.uk/Tools/msa/muscle/Tools/NCBIedirect)
+-   [NCBI-edirect](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
 
 ```bash
 ## make directory
